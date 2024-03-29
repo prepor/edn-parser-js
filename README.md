@@ -47,6 +47,22 @@ ednParse('{:hello "world"}');
 
 ## API
 
+```ts
+export type EDN =
+  | number
+  | null
+  | boolean
+  | string
+  | { symbol: string; ns?: string }
+  | { keyword: string; ns?: string }
+  | { char: string }
+  | EDN[]
+  | Map<EDN, EDN>
+  | Set<EDN>
+  | { list: EDN[] }
+  | { meta: Map<EDN, EDN>; value: EDN };
+```
+
 ### ednParse(string): EDN
 
 ### ednParseMulti(string): EDN[]
