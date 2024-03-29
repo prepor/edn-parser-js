@@ -7,7 +7,7 @@ EDN parser library for JS/TS.
 
 ## Rationaly
 
-There are number of existing EDN parser for JS/TS. But I'm not aware of one that supports all EDN features that moder Clojure could emit/parse. First of all it's [namespaced maps](https://clojure.org/reference/reader#_maps) introduced in Clojure 1.9
+There are a number of existing EDN parsers for JS/TS. But I'm not aware of one that supports all EDN features that modern Clojure could emit/parse. First of all, it's [namespaced maps](https://clojure.org/reference/reader#_maps) introduced in Clojure 1.9
 
 This parser is trying to support everything that Clojure could emit and parse using `clojure.edn`, even if it's not in [EDN "spec"](https://github.com/edn-format/edn). It includes namespaced maps, `|` in symbols/keywords, metadata parsing.
 
