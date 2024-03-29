@@ -125,4 +125,21 @@ describe('parsing', () => {
       );
     });
   });
+
+  describe('meta', () => {
+    it('should parse a meta', () => {
+      expect(ednParse('^foo [1 2]')).toEqual({
+        meta: new Map([[{ symbol: 'tag' }, { symbol: 'foo' }]]),
+        value: [1, 2],
+      });
+      expect(ednParse('^:foo [1 2]')).toEqual({
+        meta: new Map([[{ keyword: 'foo' }, true]]),
+        value: [1, 2],
+      });
+      expect(ednParse('^{[3] :b} [1 2]')).toEqual({
+        meta: new Map([[[3], { keyword: 'b' }]]),
+        value: [1, 2],
+      });
+    });
+  });
 });

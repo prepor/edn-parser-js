@@ -2,7 +2,7 @@ edn_multi = ws? @value|.., ws| ws?
 
 edn = ws? @value ws?
 
-value = nil / true / false / string / char / float / integer / symbol / keyword / list / vector / set / map / ns_map / tag
+value = nil / true / false / string / char / float / integer / symbol / keyword / list / vector / set / map / ns_map / tag / meta
 
 ws "whitespace" = ([ \t\n\r,] / comment / skip)+
 
@@ -127,3 +127,9 @@ ns_map = "#:" ns:symbol m:map {
 }
 
 tag = "#" tag:symbol value:edn { return {tag, value} } 
+
+metaVal = tag:symbol { return new Map([[{symbol: 'tag'}, tag]]) } /
+          k:keyword { return new Map([[k, true]]) } /
+          m:map { return m }
+
+meta = "^" meta:metaVal value:edn { return {meta, value} }
