@@ -337,7 +337,7 @@ function peg$parse(input, options) {
       }
     }
   }
-	return m
+  return m
 };
   var peg$f25 = function(tag, value) { return {tag, value} };
   var peg$f26 = function(tag) { return new Map([[{symbol: 'tag'}, tag]]) };
