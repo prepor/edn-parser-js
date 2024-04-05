@@ -1,24 +1,26 @@
 import { parse } from './parser';
-import { Map, List, Set } from 'immutable';
+
+export type EDNSymbol = { symbol: string; ns?: string };
 
 export type EDN =
   | number
   | null
   | boolean
   | string
-  | { symbol: string; ns?: string }
+  | EDNSymbol
   | { keyword: string; ns?: string }
   | { char: string }
-  | List<EDN>
-  | Map<EDN, EDN>
-  | Set<EDN>
-  | { list: List<EDN> }
-  | { meta: Map<EDN, EDN>; value: EDN };
+  | EDN[]
+  | { map: [EDN, EDN][] }
+  | { set: EDN[] }
+  | { list: EDN[] }
+  | { tag: EDNSymbol; value: EDN }
+  | { meta: [EDN, EDN][]; value: EDN };
 
-export const ednParseMulti = (s: string): List<EDN> => {
-  return parse(s) as List<EDN>;
+export const ednParseMulti = (s: string): EDN[] => {
+  return parse(s) as EDN[];
 };
 
-export const ednParse = (edn: string): EDN => {
-  return ednParseMulti(edn).first() ?? null;
+export const ednParse = (edn: string): EDN | undefined => {
+  return ednParseMulti(edn)[0];
 };

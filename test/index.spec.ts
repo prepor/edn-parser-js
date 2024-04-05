@@ -1,5 +1,4 @@
-import { ednParse, ednParseMulti, EDN } from '../src';
-import { Map, List, Set } from 'immutable';
+import { ednParse, ednParseMulti } from '../src';
 
 describe('parsing', () => {
   describe('symbols', () => {
@@ -9,9 +8,10 @@ describe('parsing', () => {
 
       expect(ednParse('bar/foo')).toEqual({ ns: 'bar', symbol: 'foo' });
 
-      expect(ednParseMulti('-a1 a:#')).toEqual(
-        List([{ symbol: '-a1' }, { symbol: 'a:#' }])
-      );
+      expect(ednParseMulti('-a1 a:#')).toEqual([
+        { symbol: '-a1' },
+        { symbol: 'a:#' },
+      ]);
     });
   });
 
@@ -25,29 +25,29 @@ describe('parsing', () => {
 
   describe('special symbols', () => {
     it('should parse a special symbol', () => {
-      expect(ednParseMulti('true false nil')).toEqual(
-        List([true, false, null])
-      );
+      expect(ednParseMulti('true false nil')).toEqual([true, false, null]);
     });
   });
 
   describe('integers', () => {
     it('should parse a integer', () => {
-      expect(ednParseMulti('1 123 123N')).toEqual(List([1, 123, 123]));
+      expect(ednParseMulti('1 123 123N')).toEqual([1, 123, 123]);
     });
   });
 
   describe('float', () => {
     it('should parse a float', () => {
-      expect(ednParseMulti('1.123 1E4 1M')).toEqual(List([1.123, 10000, 1]));
+      expect(ednParseMulti('1.123 1E4 1M')).toEqual([1.123, 10000, 1]);
     });
   });
 
   describe('chars', () => {
     it('should parse a char', () => {
-      expect(ednParseMulti('\\a \\tab \\newline')).toEqual(
-        List([{ char: 'a' }, { char: '\t' }, { char: '\n' }])
-      );
+      expect(ednParseMulti('\\a \\tab \\newline')).toEqual([
+        { char: 'a' },
+        { char: '\t' },
+        { char: '\n' },
+      ]);
 
       expect(ednParse('\\u03A9')).toEqual({ char: 'Ω' });
     });
@@ -70,38 +70,32 @@ describe('parsing', () => {
 
   describe('lists', () => {
     it('should parse a list', () => {
-      expect(ednParse('(1 2 3)')).toEqual({ list: List([1, 2, 3]) });
+      expect(ednParse('(1 2 3)')).toEqual({ list: [1, 2, 3] });
 
-      expect(ednParse('(1,2,3)')).toEqual({ list: List([1, 2, 3]) });
+      expect(ednParse('(1,2,3)')).toEqual({ list: [1, 2, 3] });
     });
   });
 
   describe('vectors', () => {
     it('should parse a vector', () => {
-      expect(ednParse('[1 2 3]')).toEqual(List([1, 2, 3]));
+      expect(ednParse('[1 2 3]')).toEqual([1, 2, 3]);
     });
   });
 
   describe('maps', () => {
     it('should parse a map', () => {
-      expect(ednParse('{1 2 3 4}')).toEqual(
-        Map([
+      expect(ednParse('{1 2 [3 4] 4}')).toEqual({
+        map: [
           [1, 2],
-          [3, 4],
-        ])
-      );
-    });
-
-    it('should work with complex keys', () => {
-      expect(
-        (ednParse('{[1 2] 2}') as Map<EDN, EDN>).get(List([1, 2]))
-      ).toEqual(2);
+          [[3, 4], 4],
+        ],
+      });
     });
   });
 
   describe('sets', () => {
     it('should parse a set', () => {
-      expect(ednParse('#{1 2 3 }')).toEqual(Set([1, 2, 3]));
+      expect(ednParse('#{1 2 3 }')).toEqual({ set: [1, 2, 3] });
     });
   });
 
@@ -121,30 +115,30 @@ describe('parsing', () => {
 
   describe('namespaced maps', () => {
     it('should parse a namespaced map', () => {
-      expect(ednParse('#:foo{:bar 1 :_/bar 2 :baz/bar 3 "str" 4}')).toEqual(
-        Map<EDN, EDN>([
+      expect(ednParse('#:foo{:bar 1 :_/bar 2 :baz/bar 3 "str" 4}')).toEqual({
+        map: [
           [{ keyword: 'bar', ns: 'foo' }, 1],
           [{ keyword: 'bar' }, 2],
           [{ keyword: 'bar', ns: 'baz' }, 3],
           ['str', 4],
-        ])
-      );
+        ],
+      });
     });
   });
 
   describe('meta', () => {
     it('should parse a meta', () => {
       expect(ednParse('^foo [1 2]')).toEqual({
-        meta: Map([[{ symbol: 'tag' }, { symbol: 'foo' }]]),
-        value: List([1, 2]),
+        meta: [[{ symbol: 'tag' }, { symbol: 'foo' }]],
+        value: [1, 2],
       });
       expect(ednParse('^:foo [1 2]')).toEqual({
-        meta: Map([[{ keyword: 'foo' }, true]]),
-        value: List([1, 2]),
+        meta: [[{ keyword: 'foo' }, true]],
+        value: [1, 2],
       });
       expect(ednParse('^{[3] :b} [1 2]')).toEqual({
-        meta: Map([[List([3]), { keyword: 'b' }]]),
-        value: List([1, 2]),
+        meta: [[[3], { keyword: 'b' }]],
+        value: [1, 2],
       });
     });
   });

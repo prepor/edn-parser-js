@@ -1,8 +1,4 @@
-{{
-  import Imm from 'immutable';
-}}  
-
-edn_multi = ws? v:value|.., ws| ws? { return Imm.List(v) }
+edn_multi = ws? @value|.., ws| ws?
 
 edn = ws? @value ws?
 
@@ -110,15 +106,15 @@ list = "(" values: edn_multi ")" { return {list: values} }
 vector = "[" @edn_multi "]"
 
 set = "#{" values: edn_multi "}" { 
-  return Imm.Set(values)
+  return {set: values}
 }
 
 map = "{" kv:(k:edn v:edn)+ "}" { 
-  return Imm.Map(kv)
+  return {map: kv}
 }
 
 ns_map = "#:" ns:symbol m:map {
-  for (const [k,v] of m) {
+  for (const [k,v] of m.map) {
     if (k.keyword) {
       if (k.ns == "_") {
         delete k.ns
@@ -132,8 +128,8 @@ ns_map = "#:" ns:symbol m:map {
 
 tag = "#" tag:symbol value:edn { return {tag, value} } 
 
-metaVal = tag:symbol { return Imm.Map([[{symbol: 'tag'}, tag]]) } /
-          k:keyword { return Imm.Map([[k, true]]) } /
-          m:map { return m }
+metaVal = tag:symbol { return [[{symbol: 'tag'}, tag]] } /
+          k:keyword { return [[k, true]] } /
+          m:map { return m.map }
 
 meta = "^" meta:metaVal value:edn { return {meta, value} }
