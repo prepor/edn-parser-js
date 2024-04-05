@@ -1,4 +1,5 @@
 import { parse } from './parser';
+import { Map, List, Set } from 'immutable';
 
 export type EDN =
   | number
@@ -8,16 +9,16 @@ export type EDN =
   | { symbol: string; ns?: string }
   | { keyword: string; ns?: string }
   | { char: string }
-  | EDN[]
+  | List<EDN>
   | Map<EDN, EDN>
   | Set<EDN>
-  | { list: EDN[] }
+  | { list: List<EDN> }
   | { meta: Map<EDN, EDN>; value: EDN };
 
-export const ednParseMulti = (s: string): EDN[] => {
-  return parse(s) as EDN[];
+export const ednParseMulti = (s: string): List<EDN> => {
+  return parse(s) as List<EDN>;
 };
 
 export const ednParse = (edn: string): EDN => {
-  return ednParseMulti(edn)[0];
+  return ednParseMulti(edn).first() ?? null;
 };
